@@ -1,9 +1,14 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 function App() {
   const [length, setLength] = useState(8);
   const [noAllowed, setNoAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("");
+
+  //useRef
+
+  const passwordRef = useRef(null);
+
   //------------------useCallback is used for optimising through memoize the calls-------
   //------------------and useEffect is used for using it---------------
   const passwordGenerator = useCallback(() => {
@@ -23,6 +28,11 @@ function App() {
     setPassword(pass);
   }, [length, noAllowed, charAllowed, setPassword]);
 
+  const copyToClipboard = useCallback(() => {
+    passwordRef.current?.select();
+    window.navigator.clipboard.writeText(password);
+  }, [password]);
+
   useEffect(() => {
     passwordGenerator();
   }, [length, noAllowed, charAllowed, passwordGenerator]);
@@ -39,8 +49,12 @@ function App() {
             className="outline-none w-full py-1 px-3"
             placeholder="password"
             readOnly
+            ref={passwordRef}
           />
-          <button className=" outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+          <button
+            onClick={copyToClipboard}
+            className=" outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
+          >
             copy
           </button>
         </div>
